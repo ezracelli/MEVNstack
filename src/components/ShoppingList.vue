@@ -57,7 +57,7 @@ export default {
   },
   methods: {
     addItem () {
-      api.postItem({}, {}).then(() => this.list.push({}))
+      api.postItem({}, {}).then(itemId => this.list.push({ _id: itemId }))
     },
     saveItem: debounce(item => {
       api.putItem({ itemId: item._id }, item)
