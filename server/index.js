@@ -1,6 +1,7 @@
 // meta setup
 var express = require('express')
 var app = express()
+app.use(express.static(__dirname + '/dist/'))
 
 var cors = require('cors')
 app.use(cors({ origin: true }))
@@ -12,11 +13,16 @@ app.use(bodyParser.json())
 var mongoose = require('mongoose')
 mongoose
   .connect(
-    'mongodb://cst2415:Tigercst2415@ds213832.mlab.com:13832/shopping_list',
+    process.env.MONGODB_URI ||
+      'mongodb://cst2415:Tigercst2415@ds213832.mlab.com:13832/shopping_list',
     { useFindAndModify: false, useNewUrlParser: true }
-  ).then(() =>
-  console.log('connection to database established')
-)
+  )
+  .then(() => console.log('connection to database established'))
+  .catch(err => {
+    console.log(err)
+    process.exit(1)
+  })
+
 var Item = require('./models/item.js')
 
 var port = process.env.PORT || 80
@@ -25,7 +31,8 @@ var port = process.env.PORT || 80
 var router = express.Router()
 router.get('/', (req, res) => res.json({ message: 'Hello, world!' }))
 
-router.route('/items')
+router
+  .route('/items')
   .get((req, res) => {
     Item.find((err, items) => {
       if (err) res.send(err)
@@ -44,7 +51,8 @@ router.route('/items')
     })
   })
 
-router.route('/items/:itemId')
+router
+  .route('/items/:itemId')
   .get((req, res) => {
     Item.findById(req.params.itemId, (err, item) => {
       if (err) res.send(err)
@@ -74,7 +82,7 @@ app.use('/api', router)
 
 var yargs = require('yargs')
 if (yargs.argv.prod) {
-  app.use('/', express.static(__dirname + "/../dist", { extensions: ["html"] }))
+  app.use('/', express.static(__dirname + '/../dist', { extensions: ['html'] }))
 }
 
 // start the server

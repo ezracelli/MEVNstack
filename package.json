@@ -6,10 +6,12 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"webpack-dev-server --inline --progress --config build/webpack.dev.conf.js\" \"node server/index.js\"",
-    "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js",
-    "prod": "node server/index.js  --prod"
+    "prod": "node server/index.js  --prod",
+    "deploy": "git push heroku master",
+    "postinstall": "npm run build",
+    "start": "npm run prod"
   },
   "dependencies": {
     "axios": "^0.18.0",
